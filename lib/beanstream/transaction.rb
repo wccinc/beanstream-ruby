@@ -32,6 +32,7 @@ module Beanstream
       
       begin
         result = RestClient::Request.execute(req_params)
+        returns = JSON.parse(result)
       rescue RestClient::ExceptionWithResponse => ex
         if ex.response
           raise handle_api_error(ex)
