@@ -13,7 +13,7 @@ module Beanstream
   class PaymentsAPI < Transaction
   
     def self.generateRandomOrderId(prefix)
-      "order_#{prefix}_#{SecureRandom.hex(10)}"
+      "#{prefix}_#{SecureRandom.hex(8)}"
     end
 
     def make_payment_url

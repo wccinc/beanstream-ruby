@@ -14,21 +14,12 @@ module Beanstream
     end
 =end
 
-    should "canery test print out Beanstream!" do
-      puts "Beanstream!"
-      assert true
-    end
-	
-    should "make payment url be the same" do
-      assert_equal("/api/v1/payments/", PaymentsAPI.new.make_payment_url())
+    should "make profiles url be the same" do
+      assert_equal("/api/v1/profiles", ProfilesAPI.new.profile_url())
     end
     
-    should "make return url be the same" do
-      assert_equal("/api/v1/return/", PaymentsAPI.new.return_payment_url())
-    end
-    
-    should "make void url be the same" do
-      assert_equal("/api/v1/void/", PaymentsAPI.new.void_payment_url())
+    should "make profiles/cards url be the same" do
+      assert_equal("/api/v1/profiles/cards", ProfilesAPI.new.profile_cards_url())
     end
   end
   

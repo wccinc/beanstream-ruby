@@ -1,6 +1,7 @@
 require 'beanstream/transaction'
 require 'beanstream/payments_api'
 require 'beanstream/profiles_api'
+require 'beanstream/reporting_api'
 require 'beanstream/util'
 require 'beanstream/exceptions'
 
@@ -35,6 +36,10 @@ module Beanstream
   
   def self.ProfilesAPI()
     Beanstream::ProfilesAPI.new()
+  end
+  
+  def self.ReportingAPI()
+    Beanstream::ReportingAPI.new()
   end
 end
 
