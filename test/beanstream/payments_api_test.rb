@@ -24,11 +24,11 @@ module Beanstream
     end
     
     should "make return url be the same" do
-      assert_equal("/api/v1/return/", PaymentsAPI.new.return_payment_url())
+      assert_equal("/api/v1/payments/1234/returns", PaymentsAPI.new.payment_returns_url("1234"))
     end
     
     should "make void url be the same" do
-      assert_equal("/api/v1/void/", PaymentsAPI.new.void_payment_url())
+      assert_equal("/api/v1/payments/1234/void", PaymentsAPI.new.payment_void_url("1234"))
     end
   end
   
@@ -201,7 +201,7 @@ module Beanstream
       assert_equal 100.0, get_after_return["total_refunds"]
 
       # => try to void the payment after returning
-      assert_raise do
+      assert_raises InvalidRequestException do
         Beanstream.PaymentsAPI.void_payment(transaction_id, 100)
       end
     end
@@ -238,26 +238,26 @@ module Beanstream
       assert_equal "VP", get_after_void["adjusted_by"][0]["type"]
 
       # => try to return the payment after voiding
-      assert_raise do
+      assert_raises InvalidRequestException do
         Beanstream.PaymentsAPI.return_payment(transaction_id, 100)
       end
     end
 
     should "not get a random transaction id" do
-      assert_raise do
-        Beanstream.PaymentsAPI.get_transaction(500)
+      assert_raises InvalidRequestException do
+        Beanstream.PaymentsAPI.get_transaction("500")
       end
     end
 
     should "not return a random transaction id" do
-      assert_raise do
-        Beanstream.PaymentsAPI.return_payment(500, 100)
+      assert_raises InvalidRequestException do
+        Beanstream.PaymentsAPI.return_payment("500", 100)
       end
     end
 
     should "not void a random transaction id" do
-      assert_raise do
-        Beanstream.PaymentsAPI.void_payment(500, 100)
+      assert_raises InvalidRequestException do
+        Beanstream.PaymentsAPI.void_payment("500", 100)
       end
     end
     

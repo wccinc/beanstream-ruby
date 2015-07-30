@@ -86,7 +86,7 @@ module Beanstream
       puts "Report search by order number\n: #{results}"
       assert(results.length == 1, "Found #{results.length} instead")
       
-      #find transaction 2 and 3 from order number and amount
+      #find transaction 2 and 3 from ref1 and amount
       results = Beanstream.ReportingAPI.search_transactions(last3Hours, next3Hours, 1, 10, 
         Array[
           Criteria.new(Fields::Ref1, Operators::EQUALS, prefix),
