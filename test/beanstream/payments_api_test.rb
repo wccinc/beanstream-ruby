@@ -58,6 +58,14 @@ module Beanstream
       assert(PaymentsAPI.payment_approved(result))
       transaction_id = result['id']
       puts "TransactionId: #{transaction_id}"
+
+      # => new test get payments
+      result = Beanstream.PaymentsAPI.get_transaction(transaction_id)
+      puts "Get Payments Result:"
+      puts result
+      assert result["approved"] == 1
+      assert result["message"]  == "Approved"
+      # end new test
     end
     
     should "purchase successfully with a legato token" do

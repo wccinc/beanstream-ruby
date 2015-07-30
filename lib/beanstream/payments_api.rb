@@ -27,6 +27,10 @@ module Beanstream
     def void_payment_url()
       "#{Beanstream.api_base_url()}/void/"
     end
+
+    def get_transaction_url(transaction_id)
+      "#{Beanstream.api_base_url}/payments/#{transaction_id}"
+    end
     
     def make_payment(payment)
       val = transaction_post("POST", make_payment_url, Beanstream.merchant_id, Beanstream.payments_api_key, payment)
@@ -46,6 +50,10 @@ module Beanstream
       turl = "/scripts/tokenization/tokens"
       result = Transaction.new().transaction_post("POST", turl, "", "", card_info)
       token = result['token']
+    end
+
+    def get_transaction(transaction_id)
+      transaction_post("GET", get_transaction_url(transaction_id), Beanstream.merchant_id, Beanstream.payments_api_key)
     end
   
   end
