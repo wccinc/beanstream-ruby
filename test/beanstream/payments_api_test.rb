@@ -58,14 +58,6 @@ module Beanstream
       assert(PaymentsAPI.payment_approved(result))
       transaction_id = result['id']
       puts "TransactionId: #{transaction_id}"
-
-      # => new test get payments
-      result = Beanstream.PaymentsAPI.get_transaction(transaction_id)
-      puts "Get Payments Result:"
-      puts result
-      assert result["approved"] == 1
-      assert result["message"]  == "Approved"
-      # end new test
     end
     
     should "purchase successfully with a legato token" do
@@ -170,6 +162,83 @@ module Beanstream
       result = Beanstream.PaymentsAPI.complete_preauth(transaction_id, 10.33)
       puts "completion result: #{result}"
       assert(PaymentsAPI.payment_approved(result))
+    end
+
+    should "have successful credit card payment, then get the payment, then return the payment" do
+
+      # => prepare payment to have a transaction id
+      Beanstream.merchant_id = "300200578"
+      Beanstream.payments_api_key = "4BaD82D9197b4cc4b70a221911eE9f70"
+
+      result = Beanstream.PaymentsAPI.make_payment(
+        {
+          "order_number" => PaymentsAPI.generateRandomOrderId("test"),
+          "amount" => 100,
+          "payment_method" => PaymentMethods::CARD,
+          "card" => {
+            "name" => "Mr. Card Testerson",
+            "number" => "4030000010001234",
+            "expiry_month" => "07",
+            "expiry_year" => "22",
+            "cvd" => "123",
+            "complete" => true
+          }
+        }
+      )
+
+      transaction_id = result['id']
+
+      # => test get payments
+      get_result = Beanstream.PaymentsAPI.get_transaction(transaction_id)
+      assert_equal "P",         get_result["type"]
+      assert_equal "Approved",  get_result["message"]
+
+      # => test return payment
+      return_result = Beanstream.PaymentsAPI.return_payment(transaction_id, 100)
+      assert_equal "Approved",  return_result["message"]
+      assert_equal "R",         return_result["type"]
+    end
+
+    should "have successful credit card payment, then void the payment" do
+
+      # => prepare payment to have a transaction id
+      Beanstream.merchant_id = "300200578"
+      Beanstream.payments_api_key = "4BaD82D9197b4cc4b70a221911eE9f70"
+
+      result = Beanstream.PaymentsAPI.make_payment(
+        {
+          "order_number" => PaymentsAPI.generateRandomOrderId("test"),
+          "amount" => 100,
+          "payment_method" => PaymentMethods::CARD,
+          "card" => {
+            "name" => "Mr. Card Testerson",
+            "number" => "4030000010001234",
+            "expiry_month" => "07",
+            "expiry_year" => "22",
+            "cvd" => "123",
+            "complete" => true
+          }
+        }
+      )
+
+      transaction_id = result['id']
+
+      # => test void payment
+      void_result = Beanstream.PaymentsAPI.void_payment(transaction_id, 100)
+      assert_equal "Approved",  void_result["message"]
+      assert_equal "VP",        void_result["type"]
+    end
+
+    should "not get a random transaction id" do
+      assert_raise do
+        Beanstream.PaymentsAPI.get_transaction(500)
+      end
+    end
+
+    should "not return a random transaction id" do
+      assert_raise do
+        Beanstream.PaymentsAPI.return_payment(500, 100)
+      end
     end
     
   end
