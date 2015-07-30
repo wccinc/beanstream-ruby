@@ -197,6 +197,13 @@ module Beanstream
       return_result = Beanstream.PaymentsAPI.return_payment(transaction_id, 100)
       assert_equal "Approved",  return_result["message"]
       assert_equal "R",         return_result["type"]
+      get_after_return = Beanstream.PaymentsAPI.get_transaction(transaction_id)
+      assert_equal 100.0, get_after_return["total_refunds"]
+
+      # => try to void the payment after returning
+      assert_raise do
+        Beanstream.PaymentsAPI.void_payment(transaction_id, 100)
+      end
     end
 
     should "have successful credit card payment, then void the payment" do
@@ -227,6 +234,13 @@ module Beanstream
       void_result = Beanstream.PaymentsAPI.void_payment(transaction_id, 100)
       assert_equal "Approved",  void_result["message"]
       assert_equal "VP",        void_result["type"]
+      get_after_void = Beanstream.PaymentsAPI.get_transaction(transaction_id)
+      assert_equal "VP", get_after_void["adjusted_by"][0]["type"]
+
+      # => try to return the payment after voiding
+      assert_raise do
+        Beanstream.PaymentsAPI.return_payment(transaction_id, 100)
+      end
     end
 
     should "not get a random transaction id" do
@@ -238,6 +252,12 @@ module Beanstream
     should "not return a random transaction id" do
       assert_raise do
         Beanstream.PaymentsAPI.return_payment(500, 100)
+      end
+    end
+
+    should "not void a random transaction id" do
+      assert_raise do
+        Beanstream.PaymentsAPI.void_payment(500, 100)
       end
     end
     
