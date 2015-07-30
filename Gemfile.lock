@@ -1,0 +1,14 @@
+PATH
+  remote: .
+  specs:
+    beanstream (1.0.0.pre.rc1)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  beanstream!
