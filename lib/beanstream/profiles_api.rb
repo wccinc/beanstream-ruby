@@ -42,24 +42,24 @@ module Beanstream
       success = response['code'] == 1 && response['message'] == "Operation Successful"
     end
 
-		def add_profile_card(profile,card)
-			addCardUrl = profile_url + "/" + profile['customer_code'] + "/cards/"
-			val = transaction_post("POST", addCardUrl, Beanstream.merchant_id, Beanstream.profiles_api_key, card)
-		end
+    def add_profile_card(profile,card)
+      addCardUrl = profile_url + "/" + profile['customer_code'] + "/cards/"
+      val = transaction_post("POST", addCardUrl, Beanstream.merchant_id, Beanstream.profiles_api_key, card)
+    end
 
-		def get_profile_card(profile)
-			getCardUrl = profile_url + "/" + profile['customer_code'] + "/cards/"
-			val = transaction_post("get", getCardUrl, Beanstream.merchant_id, Beanstream.profiles_api_key)
-		end
+    def get_profile_card(profile)
+      getCardUrl = profile_url + "/" + profile['customer_code'] + "/cards/"
+      val = transaction_post("get", getCardUrl, Beanstream.merchant_id, Beanstream.profiles_api_key)
+    end
 
-		def update_profile_card(profile,card_index,card)
-			updateUrl = profile_url + "/" + profile['customer_code'] + "/cards/" + card_index.to_s
-			val = transaction_post("PUT", updateUrl, Beanstream.merchant_id, Beanstream.profiles_api_key, card)
-		end
+    def update_profile_card(profile,card_index,card)
+      updateUrl = profile_url + "/" + profile['customer_code'] + "/cards/" + card_index.to_s
+      val = transaction_post("PUT", updateUrl, Beanstream.merchant_id, Beanstream.profiles_api_key, card)
+    end
 
-		def delete_profile_card(profile,card_index)
-			deleteUrl = profile_url + "/" + profile['customer_code'] + "/cards/" + card_index.to_s
-			val = transaction_post("DELETE", deleteUrl, Beanstream.merchant_id, Beanstream.profiles_api_key, nil)
-		end
+    def delete_profile_card(profile,card_index)
+      deleteUrl = profile_url + "/" + profile['customer_code'] + "/cards/" + card_index.to_s
+      val = transaction_post("DELETE", deleteUrl, Beanstream.merchant_id, Beanstream.profiles_api_key, nil)
+    end
 	end
 end
