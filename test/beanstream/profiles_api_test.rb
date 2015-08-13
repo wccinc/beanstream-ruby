@@ -51,10 +51,10 @@ module Beanstream
 
       @card2 = {
         "card" => {
-        "name":"John Doe",
-        "number":"5100000010001004",
-        "expiry_month":"02",
-        "expiry_year":"14" 
+        "name"=>"John Doe",
+        "number"=>"5100000010001004",
+        "expiry_month"=>"02",
+        "expiry_year"=>"14" 
       } }
 
     end
