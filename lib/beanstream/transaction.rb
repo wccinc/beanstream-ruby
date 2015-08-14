@@ -57,8 +57,8 @@ module Beanstream
         obj = JSON.parse(ex.http_body)
         obj = Util.symbolize_names(obj)
         code = obj[:code]
-        category = obj[:code]
-        message = message+": #{ex.http_body}"
+        category = obj[:category]
+        message = obj[:message]
       rescue JSON::ParserError
         puts "Error parsing json error message"
       end

@@ -6,14 +6,6 @@ module Beanstream
   
   class PaymentsAPITest < Test::Unit::TestCase
 
-=begin  
-    setup do
-      Beanstream.merchant_id = "300200578"
-      Beanstream.payments_api_key = "4BaD82D9197b4cc4b70a221911eE9f70"
-      puts "merchant ID and key set"
-    end
-=end
-
     should "canery test print out Beanstream!" do
       puts "Beanstream!"
       assert true
@@ -33,23 +25,27 @@ module Beanstream
   end
   
   class PaymentsAPIIntegrationTest < Test::Unit::TestCase
-    should "have successful credit card payment" do
-      
+    
+    setup do
       Beanstream.merchant_id = "300200578"
       Beanstream.payments_api_key = "4BaD82D9197b4cc4b70a221911eE9f70"
+    end
+    
+    #Card purchase
+    should "have successful credit card payment" do
       
       result = Beanstream.PaymentsAPI.make_payment(
         {
-          "order_number" => PaymentsAPI.generateRandomOrderId("test"),
-          "amount" => 100,
-          "payment_method" => PaymentMethods::CARD,
-          "card" => {
-            "name" => "Mr. Card Testerson",
-            "number" => "4030000010001234",
-            "expiry_month" => "07",
-            "expiry_year" => "22",
-            "cvd" => "123",
-            "complete" => true
+          :order_number => PaymentsAPI.generateRandomOrderId("test"),
+          :amount => 100,
+          :payment_method => PaymentMethods::CARD,
+          :card => {
+            :name => "Mr. Card Testerson",
+            :number => "4030000010001234",
+            :expiry_month => "07",
+            :expiry_year => "22",
+            :cvd => "123",
+            :complete => true
           }
         }
       )
@@ -60,17 +56,15 @@ module Beanstream
       puts "TransactionId: #{transaction_id}"
     end
     
+    # Token purchase
     should "purchase successfully with a legato token" do
-      
-      Beanstream.merchant_id = "300200578"
-      Beanstream.payments_api_key = "4BaD82D9197b4cc4b70a221911eE9f70"
       
       token = Beanstream.PaymentsAPI.get_legato_token(
         {
-          "number" => "4030000010001234",
-          "expiry_month" => "07",
-          "expiry_year" => "22",
-          "cvd" => "123"
+          :number => "4030000010001234",
+          :expiry_month => "07",
+          :expiry_year => "22",
+          :cvd => "123"
         }
       )
       puts "token result: #{token}"
@@ -78,13 +72,13 @@ module Beanstream
 
       result = Beanstream.PaymentsAPI.make_payment(
         {
-          "order_number" => PaymentsAPI.generateRandomOrderId("test"),
-          "amount" => 13.99,
-          "payment_method" => PaymentMethods::TOKEN,
-          "token" => {
-            "name" => "Bobby Test",
-            "code" => token,
-            "complete" => true
+          :order_number => PaymentsAPI.generateRandomOrderId("test"),
+          :amount => 13.99,
+          :payment_method => PaymentMethods::TOKEN,
+          :token => {
+            :name => "Bobby Test",
+            :code => token,
+            :complete => true
           }
         }
       )
@@ -93,23 +87,51 @@ module Beanstream
 
     end
     
-    should "have successful credit card pre-auth and completion" do
+    #Card decline
+    should "have declined credit card payment" do
       
-      Beanstream.merchant_id = "300200578"
-      Beanstream.payments_api_key = "4BaD82D9197b4cc4b70a221911eE9f70"
+      decline = false
+      begin
+        result = Beanstream.PaymentsAPI.make_payment(
+        {
+          :order_number => PaymentsAPI.generateRandomOrderId("test"),
+          :amount => 100,
+          :payment_method => PaymentMethods::CARD,
+          :card => {
+            :name => "Mr. Card Testerson",
+            :number => "4003050500040005", #declined card
+            :expiry_month => "07",
+            :expiry_year => "22",
+            :cvd => "123",
+            :complete => true
+          }
+        })
+      rescue BeanstreamException => ex
+        decline = true
+        puts "Exception: #{ex.user_facing_message}"
+        assert(ex.user_facing_message == "DECLINE")
+        assert(ex.is_user_error())
+      end
+      
+      assert(decline)
+
+    end
+    
+    #PreAuth card
+    should "have successful credit card pre-auth and completion" do
       
       result = Beanstream.PaymentsAPI.make_payment(
         {
-          "order_number" => PaymentsAPI.generateRandomOrderId("test"),
-          "amount" => 100,
-          "payment_method" => PaymentMethods::CARD,
-          "card" => {
-            "name" => "Mr. Card Testerson",
-            "number" => "4030000010001234",
-            "expiry_month" => "07",
-            "expiry_year" => "22",
-            "cvd" => "123",
-            "complete" => false
+          :order_number => PaymentsAPI.generateRandomOrderId("test"),
+          :amount => 100,
+          :payment_method => PaymentMethods::CARD,
+          :card => {
+            :name => "Mr. Card Testerson",
+            :number => "4030000010001234",
+            :expiry_month => "07",
+            :expiry_year => "22",
+            :cvd => "123",
+            :complete => false
           }
         }
       )
@@ -124,18 +146,16 @@ module Beanstream
       assert(PaymentsAPI.payment_approved(result))
     end
     
+    #PreAuth token
     should "pre-auth and complete successfully with a legato token" do
-      
-      Beanstream.merchant_id = "300200578"
-      Beanstream.payments_api_key = "4BaD82D9197b4cc4b70a221911eE9f70"
       
       # 1) get token
       token = Beanstream.PaymentsAPI.get_legato_token(
         {
-          "number" => "4030000010001234",
-          "expiry_month" => "07",
-          "expiry_year" => "22",
-          "cvd" => "123"
+          :number => "4030000010001234",
+          :expiry_month => "07",
+          :expiry_year => "22",
+          :cvd => "123"
         }
       )
       puts "token result: #{token}"
@@ -144,13 +164,13 @@ module Beanstream
       # 2) make pre-auth
       result = Beanstream.PaymentsAPI.make_payment(
         {
-          "order_number" => PaymentsAPI.generateRandomOrderId("test"),
-          "amount" => 13.99,
-          "payment_method" => PaymentMethods::TOKEN,
-          "token" => {
-            "name" => "Bobby Test",
-            "code" => token,
-            "complete" => false
+          :order_number => PaymentsAPI.generateRandomOrderId("test"),
+          :amount => 13.99,
+          :payment_method => PaymentMethods::TOKEN,
+          :token => {
+            :name => "Bobby Test",
+            :code => token,
+            :complete => false
           }
         }
       )
@@ -164,24 +184,21 @@ module Beanstream
       assert(PaymentsAPI.payment_approved(result))
     end
 
+    #Return
     should "have successful credit card payment, then get the payment, then return the payment" do
-
-      # => prepare payment to have a transaction id
-      Beanstream.merchant_id = "300200578"
-      Beanstream.payments_api_key = "4BaD82D9197b4cc4b70a221911eE9f70"
 
       result = Beanstream.PaymentsAPI.make_payment(
         {
-          "order_number" => PaymentsAPI.generateRandomOrderId("test"),
-          "amount" => 100,
-          "payment_method" => PaymentMethods::CARD,
-          "card" => {
-            "name" => "Mr. Card Testerson",
-            "number" => "4030000010001234",
-            "expiry_month" => "07",
-            "expiry_year" => "22",
-            "cvd" => "123",
-            "complete" => true
+          :order_number => PaymentsAPI.generateRandomOrderId("test"),
+          :amount => 100,
+          :payment_method => PaymentMethods::CARD,
+          :card => {
+            :name => "Mr. Card Testerson",
+            :number => "4030000010001234",
+            :expiry_month => "07",
+            :expiry_year => "22",
+            :cvd => "123",
+            :complete => true
           }
         }
       )
@@ -206,24 +223,21 @@ module Beanstream
       end
     end
 
+    #Void
     should "have successful credit card payment, then void the payment" do
-
-      # => prepare payment to have a transaction id
-      Beanstream.merchant_id = "300200578"
-      Beanstream.payments_api_key = "4BaD82D9197b4cc4b70a221911eE9f70"
-
+	
       result = Beanstream.PaymentsAPI.make_payment(
         {
-          "order_number" => PaymentsAPI.generateRandomOrderId("test"),
-          "amount" => 100,
-          "payment_method" => PaymentMethods::CARD,
-          "card" => {
-            "name" => "Mr. Card Testerson",
-            "number" => "4030000010001234",
-            "expiry_month" => "07",
-            "expiry_year" => "22",
-            "cvd" => "123",
-            "complete" => true
+          :order_number => PaymentsAPI.generateRandomOrderId("test"),
+          :amount => 100,
+          :payment_method => PaymentMethods::CARD,
+          :card => {
+            :name => "Mr. Card Testerson",
+            :number => "4030000010001234",
+            :expiry_month => "07",
+            :expiry_year => "22",
+            :cvd => "123",
+            :complete => true
           }
         }
       )

@@ -28,90 +28,94 @@ module Beanstream
       Beanstream.payments_api_key = "4BaD82D9197b4cc4b70a221911eE9f70"
       Beanstream.profiles_api_key = "D97D3BE1EE964A6193D17A571D9FBC80"
       @profile = Beanstream.ProfilesAPI.create_profile(
-        {
-        "billing" => {
-        "name" => "Hilary Test",
-        "address_line1" => "123 Fake St.",
-        "city" => "Victoria",
-        "province" => "BC",
-        "country" => "CA",
-        "postal_code" => "v1v2v2",
-        "phone_number" => "12505551234",
-        "email_address" => "fake@example.com"
-      }
+      {
+        :billing => {
+          :name => "Hilary Test",
+          :address_line1 => "123 Fake St.",
+          :city => "Victoria",
+          :province => "BC",
+          :country => "CA",
+          :postal_code => "v1v2v2",
+          :phone_number => "12505551234",
+          :email_address => "fake@example.com"
+        }
       })
+      
       @card1 = {
-        "card" => {
-        "name" => "Hilary Test",
-        "number" => "4030000010001234",
-        "expiry_month" => "07",
-        "expiry_year" => "22",
-        "cvd" => "123"
-      }}
+        :card => {
+          :name => "Hilary Test",
+          :number => "4030000010001234",
+          :expiry_month => "07",
+          :expiry_year => "22",
+          :cvd => "123"
+        }
+      }
 
       @card2 = {
-        "card" => {
-        "name"=>"John Doe",
-        "number"=>"5100000010001004",
-        "expiry_month"=>"02",
-        "expiry_year"=>"14" 
-      } }
+        :card => {
+          :name => "John Doe",
+          :number => "5100000010001004",
+          :expiry_month => "12",
+          :expiry_year => "14",
+          :cvd => "123"
+        }
+      }
 
     end
 
+  # Profile CREATE
     should "have successfully created a profile" do
       result = Beanstream.ProfilesAPI.create_profile(
-        {
-        "card" => {
-        "name" => "Bob Test",
-        "number" => "4030000010001234",
-        "expiry_month" => "07",
-        "expiry_year" => "22",
-        "cvd" => "123"
-      },
-        "billing" => {
-        "name" => "Bob Test",
-        "address_line1" => "123 Fake St.",
-        "city" => "Victoria",
-        "province" => "BC",
-        "country" => "CA",
-        "postal_code" => "v1v2v2",
-        "phone_number" => "12505551234",
-        "email_address" => "fake@example.com"
-      }
-      }
-      )
+      {
+        :card => {
+          :name => "Bob Test",
+          :number => "4030000010001234",
+          :expiry_month => "07",
+          :expiry_year => "22",
+          :cvd => "123"
+        },
+        :billing => {
+          :name => "Bob Test",
+          :address_line1 => "123 Fake St.",
+          :city => "Victoria",
+          :province => "BC",
+          :country => "CA",
+          :postal_code => "v1v2v2",
+          :phone_number => "12505551234",
+          :email_address => "fake@example.com"
+        }
+      })
       assert(ProfilesAPI.profile_successfully_created(result))
       profile_id = result['customer_code']
       puts "Created profile with ID: #{profile_id}"
     end
 
+  # Profile DELETE
     should "have successfully deleted a profile" do
 
       Beanstream.merchant_id = "300200578"
       Beanstream.profiles_api_key = "D97D3BE1EE964A6193D17A571D9FBC80"
 
       result = Beanstream.ProfilesAPI.create_profile(
-        {
-        "card" => {
-        "name" => "Jill Test",
-        "number" => "4030000010001234",
-        "expiry_month" => "07",
-        "expiry_year" => "22",
-        "cvd" => "123"
-      },
-        "billing" => {
-        "name" => "Jill Test",
-        "address_line1" => "123 Fake St.",
-        "city" => "Victoria",
-        "province" => "BC",
-        "country" => "CA",
-        "postal_code" => "v1v2v2",
-        "phone_number" => "12505551234",
-        "email_address" => "fake@example.com"
-      }
-      }
-      )
+      {
+        :card => {
+          :name => "Jill Test",
+          :number => "4030000010001234",
+          :expiry_month => "07",
+          :expiry_year => "22",
+          :cvd => "123"
+        },
+        :billing => {
+          :name => "Jill Test",
+          :address_line1 => "123 Fake St.",
+          :city => "Victoria",
+          :province => "BC",
+          :country => "CA",
+          :postal_code => "v1v2v2",
+          :phone_number => "12505551234",
+          :email_address => "fake@example.com"
+        }
+      })
       assert(ProfilesAPI.profile_successfully_created(result))
       profile_id = result['customer_code']
       puts "Created profile with ID: #{profile_id}"
@@ -122,32 +126,32 @@ module Beanstream
       puts "Deleted profile #{result['customer_code']}"
     end
 
+  # Profile GET
     should "have successfully retrieved a profile" do
 
       Beanstream.merchant_id = "300200578"
       Beanstream.profiles_api_key = "D97D3BE1EE964A6193D17A571D9FBC80"
 
       result = Beanstream.ProfilesAPI.create_profile(
-        {
-        "card" => {
-        "name" => "Jill Test",
-        "number" => "4030000010001234",
-        "expiry_month" => "07",
-        "expiry_year" => "22",
-        "cvd" => "123"
-      },
-        "billing" => {
-        "name" => "Jill Test",
-        "address_line1" => "123 Fake St.",
-        "city" => "Victoria",
-        "province" => "BC",
-        "country" => "CA",
-        "postal_code" => "v1v2v2",
-        "phone_number" => "12505551234",
-        "email_address" => "fake@example.com"
-      }
-      }
-      )
+      {
+        :card => {
+          :name => "Jill Test",
+          :number => "4030000010001234",
+          :expiry_month => "07",
+          :expiry_year => "22",
+          :cvd => "123"
+        },
+        :billing => {
+          :name => "Jill Test",
+          :address_line1 => "123 Fake St.",
+          :city => "Victoria",
+          :province => "BC",
+          :country => "CA",
+          :postal_code => "v1v2v2",
+          :phone_number => "12505551234",
+          :email_address => "fake@example.com"
+        }
+      })
       assert(ProfilesAPI.profile_successfully_created(result))
       profile_id = result['customer_code']
       puts "Created profile with ID: #{profile_id}"
@@ -160,32 +164,32 @@ module Beanstream
       Beanstream.ProfilesAPI.delete_profile(profile_id) #delete it to clean up
     end
 
-    should "have successfully retrieved a profile" do
+    # Profile UPDATE
+    should "have successfully updated a profile" do
 
       Beanstream.merchant_id = "300200578"
       Beanstream.profiles_api_key = "D97D3BE1EE964A6193D17A571D9FBC80"
 
       result = Beanstream.ProfilesAPI.create_profile(
-        {
-        "card" => {
-        "name" => "Hilary Test",
-        "number" => "4030000010001234",
-        "expiry_month" => "07",
-        "expiry_year" => "22",
-        "cvd" => "123"
-      },
-        "billing" => {
-        "name" => "Hilary Test",
-        "address_line1" => "123 Fake St.",
-        "city" => "Victoria",
-        "province" => "BC",
-        "country" => "CA",
-        "postal_code" => "v1v2v2",
-        "phone_number" => "12505551234",
-        "email_address" => "fake@example.com"
-      }
-      }
-      )
+      {
+        :card => {
+          :name => "Hilary Test",
+          :number => "4030000010001234",
+          :expiry_month => "07",
+          :expiry_year => "22",
+          :cvd => "123"
+        },
+        :billing => {
+          :name => "Hilary Test",
+          :address_line1 => "123 Fake St.",
+          :city => "Victoria",
+          :province => "BC",
+          :country => "CA",
+          :postal_code => "v1v2v2",
+          :phone_number => "12505551234",
+          :email_address => "fake@example.com"
+        }
+      })
       assert(ProfilesAPI.profile_successfully_created(result))
       profile_id = result['customer_code']
       puts "Created profile with ID: #{profile_id}"
@@ -238,7 +242,7 @@ module Beanstream
     end
 
     should 'successfully update card' do
-      # Create profile with card 1	
+      # Create profile with card 1  
       insert_card = Beanstream.ProfilesAPI.add_profile_card(@profile,@card2)
       # Update profile with card 2
       update_card = Beanstream.ProfilesAPI.update_profile_card(@profile,1,@card1)
@@ -247,7 +251,7 @@ module Beanstream
     end
 
     should 'successfully delete card' do
-      # Create profile with card 1	
+      # Create profile with card 1  
       insert_card = Beanstream.ProfilesAPI.add_profile_card(@profile,@card2)
       # delete card from profile
       delete_card = Beanstream.ProfilesAPI.delete_profile_card(@profile,1)
