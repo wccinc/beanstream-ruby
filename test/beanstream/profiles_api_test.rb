@@ -63,31 +63,70 @@ module Beanstream
 
     end
 
-  # Profile CREATE
-    should "have successfully created a profile" do
-      result = Beanstream.ProfilesAPI.create_profile(
-      {
-        :card => {
-          :name => "Bob Test",
-          :number => "4030000010001234",
-          :expiry_month => "07",
-          :expiry_year => "22",
-          :cvd => "123"
-        },
-        :billing => {
-          :name => "Bob Test",
-          :address_line1 => "123 Fake St.",
-          :city => "Victoria",
-          :province => "BC",
-          :country => "CA",
-          :postal_code => "v1v2v2",
-          :phone_number => "12505551234",
-          :email_address => "fake@example.com"
-        }
-      })
-      assert(ProfilesAPI.profile_successfully_created(result))
-      profile_id = result['customer_code']
-      puts "Created profile with ID: #{profile_id}"
+  # Profile CREATE with CARD
+    should "have successfully created a profile with credit card" do
+    
+      begin
+        profile = Beanstream.ProfilesAPI.getCreateProfileWithCardTemplate()
+        profile[:card][:name] = "Bob Test"
+        profile[:card][:number] = "4030000010001234"
+        profile[:card][:expiry_month] ="07"
+        profile[:card][:expiry_year] = "22"
+        profile[:card][:cvd] = "123"
+        profile[:billing][:name] = "Bob Test"
+        profile[:billing][:address_line1] = "123 Fake St."
+        profile[:billing][:city] = "Victoria"
+        profile[:billing][:province] = "BC"
+        profile[:billing][:country] = "CA"
+        profile[:billing][:postal_code] = "v1v2v2"
+        profile[:billing][:phone_number] = "12505551234"
+        profile[:billing][:email_address] = "fake@example.com"
+        
+        result = Beanstream.ProfilesAPI.create_profile(profile)
+        
+        assert(ProfilesAPI.profile_successfully_created(result))
+        profile_id = result['customer_code']
+        puts "Created profile with ID: #{profile_id}"
+      rescue BeanstreamException => ex
+        assert(false)
+      end
+    end
+    
+    # Profile CREATE with TOKEN
+    should "have successfully created a profile with token" do
+    
+      begin
+        token = Beanstream.PaymentsAPI.get_legato_token(
+          {
+            :number => "4030000010001234",
+            :expiry_month => "07",
+            :expiry_year => "22",
+            :cvd => "123"
+          }
+        )
+        puts "token result: #{token}"
+        assert(token != nil)
+        
+        profile = Beanstream.ProfilesAPI.getCreateProfileWithTokenTemplate()
+        profile[:token][:name] = "Bob Test"
+        profile[:token][:code] = token
+        profile[:billing][:name] = "Bob Test"
+        profile[:billing][:address_line1] = "123 Fake St."
+        profile[:billing][:city] = "Victoria"
+        profile[:billing][:province] = "BC"
+        profile[:billing][:country] = "CA"
+        profile[:billing][:postal_code] = "v1v2v2"
+        profile[:billing][:phone_number] = "12505551234"
+        profile[:billing][:email_address] = "fake@example.com"
+        
+        result = Beanstream.ProfilesAPI.create_profile(profile)
+        
+        assert(ProfilesAPI.profile_successfully_created(result))
+        profile_id = result['customer_code']
+        puts "Created profile with ID: #{profile_id}"
+      rescue BeanstreamException => ex
+        assert(false)
+      end
     end
 
   # Profile DELETE
@@ -257,5 +296,68 @@ module Beanstream
       delete_card = Beanstream.ProfilesAPI.delete_profile_card(@profile,1)
       assert(delete_card['message']== 'Operation Successful')
     end
+    
+    # Profile PAYMENT and PRE_AUTH
+    should "have successfully made payments with a profile" do
+      
+      profile_id = ""
+      begin
+        result = Beanstream.ProfilesAPI.create_profile(
+        {
+          :card => {
+            :name => "Bob Test",
+            :number => "4030000010001234",
+            :expiry_month => "07",
+            :expiry_year => "22",
+            :cvd => "123"
+          },
+          :billing => {
+            :name => "Bob Test",
+            :address_line1 => "123 Fake St.",
+            :city => "Victoria",
+            :province => "BC",
+            :country => "CA",
+            :postal_code => "v1v2v2",
+            :phone_number => "12505551234",
+            :email_address => "fake@example.com"
+          }
+        })
+        assert(ProfilesAPI.profile_successfully_created(result))
+        profile_id = result['customer_code']
+        puts "Created profile with ID: #{profile_id}"
+      rescue BeanstreamException => ex
+        puts "Error: #{ex.user_facing_message()}"
+        assert(false)
+      end
+      
+      begin
+        # payment
+        profile_payment = Beanstream.PaymentsAPI.getProfilePaymentRequestTemplate()
+        profile_payment[:payment_profile][:customer_code] = profile_id
+        profile_payment[:amount] = 77.50
+        result = Beanstream.PaymentsAPI.make_payment(profile_payment)
+      rescue BeanstreamException => ex
+        puts "Error: #{ex.user_facing_message()}"
+        assert(false) #declined
+      end
+      
+      begin
+        # pre-auth
+        profile_payment = Beanstream.PaymentsAPI.getProfilePaymentRequestTemplate()
+        profile_payment[:amount] = 80
+        profile_payment[:payment_profile][:customer_code] = profile_id
+        profile_payment[:payment_profile][:complete] = false #false for pre-auth
+        result = Beanstream.PaymentsAPI.make_payment(profile_payment)
+        
+        #complete pre-auth
+        result = Beanstream.PaymentsAPI.complete_preauth(result['id'], 40.50)
+        puts "completion result: #{result}"
+        assert(PaymentsAPI.payment_approved(result))
+      rescue BeanstreamException => ex
+        puts "Error: #{ex.user_facing_message()}"
+        assert(false) #declined
+      end
+    end
+    
   end
 end

@@ -14,7 +14,7 @@ module Beanstream
       enc = encode(merchant_id, api_key)
       
       path = Beanstream.api_host_url+url_path
-      puts "processing the data: #{method} #{path} #{data.to_json}"
+      #puts "processing the data: #{method} #{path} #{data.to_json}"
     
       req_params = {
         :verify_ssl => OpenSSL::SSL::VERIFY_PEER,
@@ -46,7 +46,7 @@ module Beanstream
     end
     
     def handle_api_error(ex)
-      puts "error: #{ex}"
+      #puts "error: #{ex}"
       
       http_status_code = ex.http_code
       message = ex.message

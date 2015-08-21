@@ -44,6 +44,7 @@ module Beanstream
         :code => "",
         :complete => true
       }
+      return request
     end
     
     #Payment Request Hash for making a payment with a credit card number
@@ -58,17 +59,19 @@ module Beanstream
         :cvd => "",
         :complete => true
        }
+       return request
     end
     
     #Payment Request Hash for making a payment with a Payment Profile
     def getProfilePaymentRequestTemplate()
       request = getPaymentRequestTemplate()
       request[:payment_method] = PaymentMethods::PROFILE
-      request[:token] = {
+      request[:payment_profile] = {
         :customer_code => "",
         :card_id => 1,
         :complete => true
       }
+      return request
     end
     
     # Base Payment Request Hash for making a payments

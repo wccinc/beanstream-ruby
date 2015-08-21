@@ -70,21 +70,24 @@ module Beanstream
       puts "token result: #{token}"
       assert(token != nil)
 
-      result = Beanstream.PaymentsAPI.make_payment(
-        {
-          :order_number => PaymentsAPI.generateRandomOrderId("test"),
-          :amount => 13.99,
-          :payment_method => PaymentMethods::TOKEN,
-          :token => {
-            :name => "Bobby Test",
-            :code => token,
-            :complete => true
+      begin
+        result = Beanstream.PaymentsAPI.make_payment(
+          {
+            :order_number => PaymentsAPI.generateRandomOrderId("test"),
+            :amount => 13.99,
+            :payment_method => PaymentMethods::TOKEN,
+            :token => {
+              :name => "Bobby Test",
+              :code => token,
+              :complete => true
+            }
           }
-        }
-      )
-      puts "result: #{result}"
-      assert(PaymentsAPI.payment_approved(result))
-
+        )
+        puts "result: #{result}"
+        assert(PaymentsAPI.payment_approved(result))
+      rescue BeanstreamException => ex
+        assert(false)
+      end
     end
     
     #Card decline
@@ -106,6 +109,8 @@ module Beanstream
             :complete => true
           }
         })
+        puts "Success! TransactionID: #{result['id']}"
+        
       rescue BeanstreamException => ex
         decline = true
         puts "Exception: #{ex.user_facing_message}"
@@ -120,36 +125,47 @@ module Beanstream
     #PreAuth card
     should "have successful credit card pre-auth and completion" do
       
-      result = Beanstream.PaymentsAPI.make_payment(
-        {
-          :order_number => PaymentsAPI.generateRandomOrderId("test"),
-          :amount => 100,
-          :payment_method => PaymentMethods::CARD,
-          :card => {
-            :name => "Mr. Card Testerson",
-            :number => "4030000010001234",
-            :expiry_month => "07",
-            :expiry_year => "22",
-            :cvd => "123",
-            :complete => false
+      decline = false
+      begin
+        result = Beanstream.PaymentsAPI.make_payment(
+          {
+            :order_number => PaymentsAPI.generateRandomOrderId("test"),
+            :amount => 100,
+            :payment_method => PaymentMethods::CARD,
+            :card => {
+              :name => "Mr. Card Testerson",
+              :number => "4030000010001234",
+              :expiry_month => "07",
+              :expiry_year => "22",
+              :cvd => "123",
+              :complete => false
+            }
           }
-        }
-      )
-      puts "result: #{result}"
+        )
+        puts "result: #{result}"
+        assert(PaymentsAPI.payment_approved(result))
+        transaction_id = result['id']
+        puts "TransactionId: #{transaction_id}"
+        
+        result = Beanstream.PaymentsAPI.complete_preauth(transaction_id, 59.50)
+        puts "completion result: #{result}"
+        assert(PaymentsAPI.payment_approved(result))
       
-      assert(PaymentsAPI.payment_approved(result))
-      transaction_id = result['id']
-      puts "TransactionId: #{transaction_id}"
+      rescue BeanstreamException => ex
+        decline = true
+        puts "Exception: #{ex.user_facing_message}"
+        assert(ex.user_facing_message == "DECLINE")
+        assert(ex.is_user_error())
+      end
       
-      result = Beanstream.PaymentsAPI.complete_preauth(transaction_id, 59.50)
-      puts "completion result: #{result}"
-      assert(PaymentsAPI.payment_approved(result))
+      assert(!decline)
+      
     end
     
     #PreAuth token
     should "pre-auth and complete successfully with a legato token" do
       
-      # 1) get token
+      # 1) get token (this is normally done in the client app)
       token = Beanstream.PaymentsAPI.get_legato_token(
         {
           :number => "4030000010001234",
@@ -162,26 +178,31 @@ module Beanstream
       assert(token != nil)
 
       # 2) make pre-auth
-      result = Beanstream.PaymentsAPI.make_payment(
-        {
-          :order_number => PaymentsAPI.generateRandomOrderId("test"),
-          :amount => 13.99,
-          :payment_method => PaymentMethods::TOKEN,
-          :token => {
-            :name => "Bobby Test",
-            :code => token,
-            :complete => false
+      begin
+        result = Beanstream.PaymentsAPI.make_payment(
+          {
+            :order_number => PaymentsAPI.generateRandomOrderId("test"),
+            :amount => 13.99,
+            :payment_method => PaymentMethods::TOKEN,
+            :token => {
+              :name => "Bobby Test",
+              :code => token,
+              :complete => false
+            }
           }
-        }
-      )
-      puts "result: #{result}"
-      assert(PaymentsAPI.payment_approved(result))
-      transaction_id = result['id']
+        )
+        puts "result: #{result}"
+        assert(PaymentsAPI.payment_approved(result))
+        transaction_id = result['id']
 
-      # 3) complete purchase
-      result = Beanstream.PaymentsAPI.complete_preauth(transaction_id, 10.33)
-      puts "completion result: #{result}"
-      assert(PaymentsAPI.payment_approved(result))
+        # 3) complete purchase
+        result = Beanstream.PaymentsAPI.complete_preauth(transaction_id, 10.33)
+        puts "completion result: #{result}"
+        assert(PaymentsAPI.payment_approved(result))
+      rescue BeanstreamException => ex
+        puts "card declined"
+        assert(false)
+      end
     end
 
     #Return

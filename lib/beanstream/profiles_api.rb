@@ -11,6 +11,64 @@ module Beanstream
       "#{Beanstream.api_base_url()}/profiles/cards"
     end
     
+    def getCreateProfileWithCardTemplate()
+      request = getProfileTemplate()
+      request[:card] = {
+        :name => "",
+        :number => "",
+        :expiry_month => "",
+        :expiry_year => "",
+        :cvd => ""
+      }
+      return request
+    end
+    
+    def getCreateProfileWithTokenTemplate()
+      request = getProfileTemplate()
+      request[:token] = {
+        :name => "",
+        :code => ""
+      }
+      return request
+    end
+    
+    # a template for a Secure Payment Profile
+    def getProfileTemplate()
+      request = {
+        :language=> "",
+        :comments=> "",
+        :billing=> {
+          :name=> "",
+          :address_line1=> "",
+          :address_line2=> "",
+          :city=> "",
+          :province=> "",
+          :country=> "",
+          :postal_code=> "",
+          :phone_number=> "",
+          :email_address=> ""
+        },
+        :shipping=> {
+          :name=> "",
+          :address_line1=> "",
+          :address_line2=> "",
+          :city=> "",
+          :province=> "",
+          :country=> "",
+          :postal_code=> "",
+          :phone_number=> "",
+          :email_address=> ""
+        },
+        :custom=> {
+          :ref1=> "",
+          :ref2=> "",
+          :ref3=> "",
+          :ref4=> "",
+          :ref5=> ""
+        }
+      }
+    end
+    
     def create_profile(profile)
       val = transaction_post("POST", profile_url, Beanstream.merchant_id, Beanstream.profiles_api_key, profile)
     end

@@ -6,13 +6,11 @@ module Beanstream
   
   class ReportingAPITest < Test::Unit::TestCase
 
-=begin  
     setup do
       Beanstream.merchant_id = "300200578"
       Beanstream.payments_api_key = "4BaD82D9197b4cc4b70a221911eE9f70"
       Beanstream.reporting_api_key = "4e6Ff318bee64EA391609de89aD4CF5d"
     end
-=end
 	
     should "make reports url be the same" do
       assert_equal("/api/v1/reports", ReportingAPI.new.reports_url())
@@ -21,11 +19,14 @@ module Beanstream
   end
   
   class ReportingAPIIntegrationTest < Test::Unit::TestCase
-    should "have successfully found my payments" do
-      
+    
+    setup do
       Beanstream.merchant_id = "300200578"
       Beanstream.payments_api_key = "4BaD82D9197b4cc4b70a221911eE9f70"
       Beanstream.reporting_api_key = "4e6Ff318bee64EA391609de89aD4CF5d"
+    end
+    
+    should "have successfully found my payments" do
       
       prefix = SecureRandom.hex(4)
       #prepare a payment
@@ -79,9 +80,17 @@ module Beanstream
       
       
       #find transaction 1 from order number
-      results = Beanstream.ReportingAPI.search_transactions(last3Hours, next3Hours, 1, 10, 
-        Criteria.new(Fields::OrderNumber, Operators::EQUALS, orderNum1)
-       )
+      results = Beanstream.ReportingAPI.search_transactions(
+        last3Hours, 
+        next3Hours, 
+        1, 
+        10, 
+        Criteria.new(
+          Fields::OrderNumber, 
+          Operators::EQUALS, 
+          orderNum1
+        )
+      )
       assert(results != nil)
       puts "Report search by order number\n: #{results}"
       assert(results.length == 1, "Found #{results.length} instead")
