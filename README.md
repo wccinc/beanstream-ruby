@@ -39,7 +39,6 @@ rescue BeanstreamException => ex
 end
 ```
 
-If you would like to contribute to it and earn some cash from our code bounty program please contact bowens@beanstream.com
 
 # Reporting Issues
 Found a bug or want a feature improvement? Create a new Issue here on the github page, or email Beanstream support support@beanstream.com
