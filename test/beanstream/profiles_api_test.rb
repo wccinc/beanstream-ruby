@@ -7,9 +7,9 @@ module Beanstream
   class ProfilesAPITest < Test::Unit::TestCase
 
     setup do
-      Beanstream.merchant_id = "300200578"
-      Beanstream.payments_api_key = "4BaD82D9197b4cc4b70a221911eE9f70"
-      Beanstream.profiles_api_key = "D97D3BE1EE964A6193D17A571D9FBC80"
+      Beanstream.merchant_id = "300205872"
+      Beanstream.payments_api_key = "393A4b508186427aB49045f5E9BaCCDa"
+      Beanstream.profiles_api_key = "7C31063FDC394A179BC7AD12A4B4BE19"
     end
 
     should "make profiles url be the same" do
@@ -24,9 +24,9 @@ module Beanstream
   class ProfilesAPIIntegrationTest < Test::Unit::TestCase
 
     setup do
-      Beanstream.merchant_id = "300200578"
-      Beanstream.payments_api_key = "4BaD82D9197b4cc4b70a221911eE9f70"
-      Beanstream.profiles_api_key = "D97D3BE1EE964A6193D17A571D9FBC80"
+      Beanstream.merchant_id = "300205872"
+      Beanstream.payments_api_key = "393A4b508186427aB49045f5E9BaCCDa"
+      Beanstream.profiles_api_key = "7C31063FDC394A179BC7AD12A4B4BE19"
       @profile = Beanstream.ProfilesAPI.create_profile(
       {
         :billing => {
@@ -132,8 +132,8 @@ module Beanstream
   # Profile DELETE
     should "have successfully deleted a profile" do
 
-      Beanstream.merchant_id = "300200578"
-      Beanstream.profiles_api_key = "D97D3BE1EE964A6193D17A571D9FBC80"
+      Beanstream.merchant_id = "300205872"
+      Beanstream.profiles_api_key = "7C31063FDC394A179BC7AD12A4B4BE19"
 
       result = Beanstream.ProfilesAPI.create_profile(
       {
@@ -168,8 +168,8 @@ module Beanstream
   # Profile GET
     should "have successfully retrieved a profile" do
 
-      Beanstream.merchant_id = "300200578"
-      Beanstream.profiles_api_key = "D97D3BE1EE964A6193D17A571D9FBC80"
+      Beanstream.merchant_id = "300205872"
+      Beanstream.profiles_api_key = "7C31063FDC394A179BC7AD12A4B4BE19"
 
       result = Beanstream.ProfilesAPI.create_profile(
       {
@@ -206,8 +206,8 @@ module Beanstream
     # Profile UPDATE
     should "have successfully updated a profile" do
 
-      Beanstream.merchant_id = "300200578"
-      Beanstream.profiles_api_key = "D97D3BE1EE964A6193D17A571D9FBC80"
+      Beanstream.merchant_id = "300205872"
+      Beanstream.profiles_api_key = "7C31063FDC394A179BC7AD12A4B4BE19"
 
       result = Beanstream.ProfilesAPI.create_profile(
       {

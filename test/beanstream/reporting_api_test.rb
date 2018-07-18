@@ -7,9 +7,9 @@ module Beanstream
   class ReportingAPITest < Test::Unit::TestCase
 
     setup do
-      Beanstream.merchant_id = "300200578"
-      Beanstream.payments_api_key = "4BaD82D9197b4cc4b70a221911eE9f70"
-      Beanstream.reporting_api_key = "4e6Ff318bee64EA391609de89aD4CF5d"
+      Beanstream.merchant_id = "300205872"
+      Beanstream.payments_api_key = "393A4b508186427aB49045f5E9BaCCDa"
+      Beanstream.reporting_api_key = "6fFba6da731e467C950Cb1BD6aF0fA07"
     end
 	
     should "make reports url be the same" do
@@ -21,9 +21,9 @@ module Beanstream
   class ReportingAPIIntegrationTest < Test::Unit::TestCase
     
     setup do
-      Beanstream.merchant_id = "300200578"
-      Beanstream.payments_api_key = "4BaD82D9197b4cc4b70a221911eE9f70"
-      Beanstream.reporting_api_key = "4e6Ff318bee64EA391609de89aD4CF5d"
+      Beanstream.merchant_id = "300205872"
+      Beanstream.payments_api_key = "393A4b508186427aB49045f5E9BaCCDa"
+      Beanstream.reporting_api_key = "6fFba6da731e467C950Cb1BD6aF0fA07"
     end
     
     should "have successfully found my payments" do
